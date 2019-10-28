@@ -52,7 +52,7 @@ public class Chassis extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new ExampleCommand();
+    setDefaultCommand(new ExampleCommand());
   }
 
   public void SetSpeed(Double Left, Double Right){
