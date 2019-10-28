@@ -23,7 +23,7 @@ import frc.robot.subsystems.Chassis;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static Chassis m_subsystem = Chassis.getInstance();
+  public static Chassis m_subsystem;
   public static OI m_oi;
 
   Command m_autonomousCommand;
@@ -36,9 +36,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    m_chooser.setDefaultOption("Default Auto", new ExampleCommand(OI.m_joystick.getRawAxis(0),OI.m_joystick.getRawAxis(1)));
+    m_subsystem = Chassis.getInstance();
+    // m_chooser.setDefaultOption("Default Auto", new ExampleCommand(OI.m_joystick.getRawAxis(0),OI.m_joystick.getRawAxis(1)));
     // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
+    // SmartDashboard.putData("Auto mode", m_chooser);
   }
   /**
    * This function is called every robot packet, no matter the mode. Use
