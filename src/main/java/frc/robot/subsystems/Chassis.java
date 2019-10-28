@@ -38,7 +38,7 @@ public class Chassis extends Subsystem {
     m_backLeft = new Spark(RobotMap.LEFT_BACK_MOTOR);
     m_left = new SpeedControllerGroup(m_frontLeft, m_backLeft);
 
-    m_frontLeft = new Spark(RobotMap.RIGHT_FRONT_MOTOR);
+    m_frontRight = new Spark(RobotMap.RIGHT_FRONT_MOTOR);
     m_backRight = new Spark(RobotMap.RIGHT_BACK_MOTOR);
     m_right = new SpeedControllerGroup(m_frontRight, m_backRight);
 
