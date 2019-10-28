@@ -18,17 +18,14 @@ import frc.robot.subsystems.Chassis;
 public class ExampleCommand extends Command {
   private double left, right;
   private Chassis chassis = Chassis.getInstance();
-  public ExampleCommand(double left, double right) {
+  public ExampleCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(chassis);
-    this.left = left;
-    this.right = right;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    chassis.SetSpeed(this.left/2, this.right/2);
   }
 
   // Called repeatedly when this Command is scheduled to run
