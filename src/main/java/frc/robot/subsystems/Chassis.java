@@ -52,7 +52,7 @@ public class Chassis extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new ExampleCommand(OI.m_joystick.getRawAxis(1) / 2.0, OI.m_joystick.getRawAxis(0) / 2.0));
+    setDefaultCommand(new ExampleCommand();
   }
 
   public void SetSpeed(Double Left, Double Right){
