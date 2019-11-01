@@ -13,14 +13,11 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.OI;
 import frc.robot.RobotMap;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ChassisCommand;
 
-/**
- * Add your docs here.
- */
+
 public class Chassis extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+  
   private Spark m_frontLeft;
   private Spark m_backLeft;
   private SpeedControllerGroup m_left;
@@ -52,7 +49,7 @@ public class Chassis extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new ExampleCommand());
+    setDefaultCommand(new ChassisCommand(OI.m_joystick.getRawAxis(RobotMap.LEFT_DRIVING_AXIS) / 2.0, OI.m_joystick.getRawAxis(RobotMap.RIGHT_DRIVING_AXIS) / 2.0));
   }
 
   public void SetSpeed(Double Left, Double Right){

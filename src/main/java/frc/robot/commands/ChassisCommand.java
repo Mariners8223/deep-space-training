@@ -12,42 +12,26 @@ import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.Chassis;
 
-/**
- * An example command.  You can replace me with your own command.
- */
-public class ExampleCommand extends Command {
+
+public class ChassisCommand extends Command {
+
   private double left, right;
   private Chassis chassis = Chassis.getInstance();
-  public ExampleCommand() {
-    // Use requires() here to declare subsystem dependencies
+
+  public ChassisCommand(double Left, double Right) {
+    this.left = Left;
+    this.right = Right;
     requires(chassis);
   }
 
-  // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    chassis.SetSpeed(left, right);
   }
 
-  // Called repeatedly when this Command is scheduled to run
-  @Override
-  protected void execute() {
-    chassis.SetSpeed(OI.m_joystick.getRawAxis(1) / 2.0, OI.m_joystick.getRawAxis(0) / 2.0);
-  }
-
-  // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return true;
   }
 
-  // Called once after isFinished returns true
-  @Override
-  protected void end() {
-  }
-
-  // Called when another command which requires one or more of the same
-  // subsystems is scheduled to run
-  @Override
-  protected void interrupted() {
-  }
 }
