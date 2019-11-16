@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RotateGyro;
 import frc.robot.subsystems.Chassis;
 
 /**
@@ -70,7 +71,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_chooser.getSelected();
-
+    new RotateGyro(90).start();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.start();
     }

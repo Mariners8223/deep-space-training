@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -19,8 +22,9 @@ import frc.robot.commands.ExampleCommand;
  * Add your docs here.
  */
 public class Chassis extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+  ADXRS450_Gyro gyro;
+  PIDController RotateGyroPID;
+
   private Spark m_frontLeft;
   private Spark m_backLeft;
   private SpeedControllerGroup m_left;
@@ -43,6 +47,11 @@ public class Chassis extends Subsystem {
     m_right = new SpeedControllerGroup(m_frontRight, m_backRight);
 
     m_drive = new DifferentialDrive(m_left, m_right);
+
+    gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+    RotateGyroPID = new PIDController(1, 1*0.52, 1*0.3, gyro, (double s)->{m_drive.tankDrive(s, -s);});
+    RotateGyroPID.setOutputRange(-0.5, 0.5);
+    RotateGyroPID.setPercentTolerance(100.0/180.0);
   }
 
   public static Chassis getInstance() {
@@ -57,5 +66,18 @@ public class Chassis extends Subsystem {
 
   public void SetSpeed(Double Left, Double Right){
     m_drive.tankDrive(Left, Right);
+  }
+
+  public void EnableRotate(double degree){
+    RotateGyroPID.setSetpoint(degree);
+    RotateGyroPID.enable();
+  }
+
+  public void DisableRotate(){
+    RotateGyroPID.disable();
+  }
+
+  public boolean OnTarget(){
+    return RotateGyroPID.onTarget();
   }
 }
