@@ -9,10 +9,10 @@ def d(pt1, pt2):
     return math.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
 
-def distance_angle_frame(img, min_color, max_color):
+def distance_angle_frame(img, min_color, max_color, blur_val):
     frame_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     frame_hsv = cv2.inRange(frame_hsv, min_color, max_color)
-    frame_hsv = cv2.medianBlur(frame_hsv, 27)
+    frame_hsv = cv2.medianBlur(frame_hsv, blur_val)
 
     height, width = frame_hsv.shape
 
@@ -94,19 +94,29 @@ def distance_angle_frame(img, min_color, max_color):
     return None, None, frame_hsv
 
 
-def main() -> object:
+def main():
+    data = json.load(open("custom.json", "r"))
+    light = data["light"]
+    blur = data["blur"]
+    min_hsv = np.array(data["min"])
+    max_hsv = np.array(data["max"])
+
     cap = cv2.VideoCapture(0)
-    cap.set(15, -10)
+    cap.set(15, light)
+    i = 0
     while True:
         _, frame = cap.read()
+        #frame = cv2.imread(f"img {i}.png")
         cv2.imshow("original", frame)
 
-        D, angle, frame_edited = distance_angle_frame(frame, np.array([0, 180, 85]), np.array([100, 255, 255]))
+        D, angle, frame_edited = distance_angle_frame(frame, min_hsv, max_hsv, blur)
         cv2.imshow("original", frame)
         cv2.imshow("processed", frame_edited)
         print(f"D {D}, angle {angle}")
         if cv2.waitKey(1) & 0xFF == 'q':
             break
+        i += 1
+        i = i % 264
     cv2.destroyAllWindows()
 
 
