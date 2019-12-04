@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="22e376ca-7a32-4799-bef8-d7086d8e0091" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/edeng.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/opencvTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/opencvTest.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/default.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/openCVTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/openCVTest.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -11,6 +15,9 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="deep-space-training" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -27,7 +34,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -54,7 +61,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.openCVTest">
+  <component name="RunManager" selected="Python.Test">
     <configuration name="Test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="opencvTest" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -101,6 +108,9 @@
       <module name="opencvTest" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -115,6 +125,11 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.openCVTest" />
+      <item itemvalue="Python.Test" />
+      <item itemvalue="Python.get_threshold" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.Test" />
@@ -134,6 +149,9 @@
       <updated>1574527632356</updated>
     </task>
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.classpath" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
