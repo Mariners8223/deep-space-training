@@ -21,7 +21,8 @@ def sign(Name, Test, Bigger):
     if Bigger:
         return lambda x: cv2.setTrackbarPos(Test, "Bars", cv2.getTrackbarPos(Name, "Bars")) if x > cv2.getTrackbarPos(
             Test, "Bars") else x
-    return lambda x: cv2.setTrackbarPos(Test, "Bars", cv2.getTrackbarPos(Name, "Bars")) if x < cv2.getTrackbarPos(Test, "Bars") else x
+    return lambda x: cv2.setTrackbarPos(Test, "Bars", cv2.getTrackbarPos(Name, "Bars")) if x < cv2.getTrackbarPos(Test,
+                                                                                                                  "Bars") else x
 
 
 # Set Max
@@ -57,17 +58,27 @@ cv2.namedWindow("rgb")
 cv2.namedWindow("set")
 cv2.namedWindow("save")
 
+# rgb
+img = cv2.imread('Tester2.jpg')
+cap = cv2.VideoCapture(0)
+cap.set(15, -10)
+
+rgb = np.zeros(rgbSize, np.uint8)
+cv2.setMouseCallback("original", onClick)
+rgbOn = np.zeros(3)
+data = {}
+
 # Window arrangement
 cv2.moveWindow("Bars", 645, 515)
 cv2.moveWindow("original", 0, 0)
 cv2.moveWindow("processed", 645, 0)
 cv2.moveWindow("rgb", 0, 515)
 cv2.moveWindow("set", 0, 515 + 95)
-cv2.moveWindow("save", 0, 515 + 95 + 115)
+cv2.moveWindow("save", 322, 515 + 95)  # + 115)
 
 cv2.resizeWindow("Bars", 400, 350)
-cv2.resizeWindow("set", 400, 80)
-cv2.resizeWindow("save", 400, 40)
+cv2.resizeWindow("set", 317, 80)
+cv2.resizeWindow("save", 318, 40)
 
 # Tracker creation
 cv2.createTrackbar("MaxR", "Bars", 0, 255, sign("MaxR", "MinR", False))
@@ -78,7 +89,7 @@ cv2.createTrackbar("MaxB", "Bars", 0, 255, sign("MaxB", "MinB", False))
 cv2.createTrackbar("MinB", "Bars", 0, 255, sign("MinB", "MaxB", True))
 
 cv2.createTrackbar("Blur", "Bars", 3, 80, nothing)
-cv2.createTrackbar("Light(Neg)", "Bars", 0, 50, nothing)
+cv2.createTrackbar("Light(Neg)", "Bars", 0, 50, lambda x: cap.set(15, -x))
 
 cv2.createTrackbar("SetAsMin", "set", 0, 1, setMax("Min"))
 cv2.createTrackbar("SetAsMax", "set", 0, 1, setMax("Max"))
@@ -95,24 +106,19 @@ cv2.setTrackbarPos("MinB", "Bars", 85)
 cv2.setTrackbarPos("Light(Neg)", "Bars", 10)
 cv2.setTrackbarPos("Blur", "Bars", 27)
 
-# rgb
-img = cv2.imread('Tester4.png')
-rgb = np.zeros(rgbSize, np.uint8)
-cv2.setMouseCallback("original", onClick)
-rgbOn = np.zeros(3)
-data = {}
-
 
 def main():
     while 1:
-
+        # get img
+        global img
+        _, img = cap.read()
         # getting information from trackers
         data["min"] = np.array([cv2.getTrackbarPos("MinR", "Bars"), cv2.getTrackbarPos("MinG", "Bars"),
                                 cv2.getTrackbarPos("MinB", "Bars")])
         data["max"] = np.array([cv2.getTrackbarPos("MaxR", "Bars"), cv2.getTrackbarPos("MaxG", "Bars"),
                                 cv2.getTrackbarPos("MaxB", "Bars")])
         data["blur"] = cv2.getTrackbarPos("Blur", "Bars")
-        data["light"] = cv2.getTrackbarPos("Light(Neg)", "Bars")
+        data["light"] = -cv2.getTrackbarPos("Light(Neg)", "Bars")
 
         # checking blur
         if data["blur"] % 2 == 0:
