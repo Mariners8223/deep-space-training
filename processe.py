@@ -37,6 +37,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
 
             # avoid dividing by 0
             if d(box[0], box[1]) * d(box[0], box[3]) == 0:
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             D = constants.FOCAL_LENGTH * math.sqrt(constants.STICKER_AREA / (d(box[0], box[1]) * d(box[0], box[3])))
             pixel_middle = (box[0] + box[3]) / 2
@@ -46,13 +48,16 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             Dz = D ** 2 - Dx ** 2 - Dy ** 2
             # avoid square root negative number
             if Dz < 0:
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             Dz = math.sqrt(Dz)
 
             angle = 60 - math.degrees(math.atan(Dz / Dx))
 
             cv2.drawContours(frame_hsv, [box], -1, (0, 0, 255), 2)
-
+            cv2.putText(frame_hsv, f"distance = {D}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(frame_hsv, f"angle = {angle}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             return D, angle, frame_hsv
         elif len(contours) == 2:
             rectL = cv2.minAreaRect(contours[0])
@@ -62,6 +67,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             boxL = np.int0(boxL)
             # avoid dividing by 0
             if d(boxL[0], boxL[1]) * d(boxL[0], boxL[3]) == 0:
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             DL = constants.FOCAL_LENGTH * math.sqrt(
                 constants.STICKER_AREA / (d(boxL[0], boxL[1]) * d(boxL[0], boxL[3])))
@@ -71,6 +78,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             boxR = np.int0(boxR)
             # avoid dividing by 0
             if d(boxR[0], boxR[1]) * d(boxR[0], boxR[3]) == 0:
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             DR = constants.FOCAL_LENGTH * math.sqrt(
                 constants.STICKER_AREA / (d(boxR[0], boxR[1]) * d(boxR[0], boxR[3])))
@@ -84,6 +93,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             Dz = D ** 2 - Dx ** 2 - Dy ** 2
             # avoid square root negative number
             if Dz < 0:
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             Dz = math.sqrt(Dz)
 
@@ -91,7 +102,11 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
 
             cv2.drawContours(frame_hsv, [boxL], -1, (0, 0, 255), 2)
             cv2.drawContours(frame_hsv, [boxR], -1, (0, 0, 255), 2)
+            cv2.putText(frame_hsv, f"distance = {D}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(frame_hsv, f"angle = {angle}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             return D, angle, frame_hsv
+    cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
     return None, None, frame_hsv
 
 
@@ -102,23 +117,21 @@ def main():
     blur = data["blur"]
     min_hsv = np.array(data["min"])
     max_hsv = np.array(data["max"])
-    print(min_hsv, max_hsv, 27)
+
     # camera configuration
     cap = cv2.VideoCapture(0)
     cap.set(15, light)
     i = 0
     while True:
         # reads the frame from the camera
-        _, frame = cap.read()
-        #frame = cv2.imread(f"img {i}.png")
-        #frame = cv2.imread('Tester4.png')  # Tester2.jpg
+        # _, frame = cap.read()
+        frame = cv2.imread(f"images/img {i}.png")
         # get the distance, angle and the edited frame
         D, angle, frame_edited = distance_angle_frame(frame, min_hsv, max_hsv, blur)
         # show the original and edited images
         cv2.imshow("original", frame)
         cv2.imshow("processed", frame_edited)
-        print(f"D {D}, angle {angle}")
-        if cv2.waitKey(1) & 0xFF == 'q':
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         i += 1
         i = i % 264
