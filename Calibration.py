@@ -60,7 +60,7 @@ cv2.namedWindow("save")
 
 # rgb
 img = cv2.imread('Tester2.jpg')
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(15, -10)
 
 rgb = np.zeros(rgbSize, np.uint8)

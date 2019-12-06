@@ -112,7 +112,7 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
 
 def main():
     # load vision data
-    data = json.load(open("CalibrationOutPuts\\default.json", "r"))
+    data = json.load(open("CalibrationOutPuts\\2019.12.06.12.36.59.256213.json", "r"))
     light = data["light"]
     blur = data["blur"]
     min_hsv = np.array(data["min"])
@@ -124,8 +124,8 @@ def main():
     i = 0
     while True:
         # reads the frame from the camera
-        # _, frame = cap.read()
-        frame = cv2.imread(f"images/img {i}.png")
+        _, frame = cap.read()
+        # frame = cv2.imread(f"images/img {i}.png")
         # get the distance, angle and the edited frame
         D, angle, frame_edited = distance_angle_frame(frame, min_hsv, max_hsv, blur)
         # show the original and edited images
