@@ -12,7 +12,6 @@ def d(pt1, pt2):
 
 def distance_angle_frame(img, min_color, max_color, blur_val):
     # convert image to hsv
-
     frame_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     # threshold
     frame_hsv = cv2.inRange(frame_hsv, min_color, max_color)
@@ -37,7 +36,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
 
             # avoid dividing by 0
             if d(box[0], box[1]) * d(box[0], box[3]) == 0:
-                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255),
+                            1)
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             D = constants.FOCAL_LENGTH * math.sqrt(constants.STICKER_AREA / (d(box[0], box[1]) * d(box[0], box[3])))
@@ -48,7 +48,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             Dz = D ** 2 - Dx ** 2 - Dy ** 2
             # avoid square root negative number
             if Dz < 0:
-                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255),
+                            1)
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             Dz = math.sqrt(Dz)
@@ -67,7 +68,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             boxL = np.int0(boxL)
             # avoid dividing by 0
             if d(boxL[0], boxL[1]) * d(boxL[0], boxL[3]) == 0:
-                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255),
+                            1)
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             DL = constants.FOCAL_LENGTH * math.sqrt(
@@ -78,7 +80,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             boxR = np.int0(boxR)
             # avoid dividing by 0
             if d(boxR[0], boxR[1]) * d(boxR[0], boxR[3]) == 0:
-                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255),
+                            1)
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             DR = constants.FOCAL_LENGTH * math.sqrt(
@@ -93,7 +96,8 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
             Dz = D ** 2 - Dx ** 2 - Dy ** 2
             # avoid square root negative number
             if Dz < 0:
-                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                cv2.putText(frame_hsv, f"distance = {None}", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255),
+                            1)
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             Dz = math.sqrt(Dz)
@@ -110,9 +114,65 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
     return None, None, frame_hsv
 
 
+def get_center(img, min_color, max_color, blur_val):
+    # convert image to hsv
+    frame_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    # threshold
+    frame_hsv = cv2.inRange(frame_hsv, min_color, max_color)
+    # blur
+    frame_hsv = cv2.medianBlur(frame_hsv, blur_val)
+
+    height, width = frame_hsv.shape
+
+    # find objects
+    contours, _ = cv2.findContours(frame_hsv, 1, 2)
+
+    # find the object in rectangles and apply formulas
+    frame_hsv = cv2.cvtColor(frame_hsv, cv2.COLOR_GRAY2RGB)
+    if contours:
+        if len(contours) == 1:
+            # gets the smallest rectangle that block the contour
+            rect = cv2.minAreaRect(contours[0])
+
+            # convert to box object
+            box = cv2.boxPoints(rect)
+            box = np.int0(box)
+            cv2.drawContours(frame_hsv, [box], -1, (0, 0, 255), 2)
+
+            pixel_middle = (box[0] + box[3]) / 2
+            if pixel_middle[0] > width / 2:
+                cv2.putText(frame_hsv, f"center = {1}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                return 1, frame_hsv
+            cv2.putText(frame_hsv, f"center = {-1}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            return -1, frame_hsv
+        elif len(contours) == 2:
+            rectL = cv2.minAreaRect(contours[0])
+            rectR = cv2.minAreaRect(contours[1])
+
+            boxL = cv2.boxPoints(rectL)
+            boxL = np.int0(boxL)
+            cv2.drawContours(frame_hsv, [boxL], -1, (0, 0, 255), 2)
+
+            pixel_middle_L = (boxL[0] + boxL[3]) / 2
+
+            boxR = cv2.boxPoints(rectR)
+            boxR = np.int0(boxR)
+            cv2.drawContours(frame_hsv, [boxR], -1, (0, 0, 255), 2)
+
+            pixel_middle_R = (boxR[0] + boxR[3]) / 2
+
+            pixel_middle = (pixel_middle_L + pixel_middle_R) / 2
+
+            cv2.putText(frame_hsv, f"center = {(pixel_middle[0] / (width / 2)) - 1}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            return (pixel_middle[0] / (width / 2)) - 1, frame_hsv
+    cv2.putText(frame_hsv, f"center = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+
+    return None, frame_hsv
+
+
 def main():
     # load vision data
-    data = json.load(open("CalibrationOutPuts\\2019.12.06.12.36.59.256213.json", "r"))
+    data = json.load(open("CalibrationOutPuts\\2019.12.07.18.22.34.094816.json", "r"))
     light = data["light"]
     blur = data["blur"]
     min_hsv = np.array(data["min"])
@@ -127,10 +187,12 @@ def main():
         _, frame = cap.read()
         # frame = cv2.imread(f"images/img {i}.png")
         # get the distance, angle and the edited frame
-        D, angle, frame_edited = distance_angle_frame(frame, min_hsv, max_hsv, blur)
+        D, angle, frame_edited_D_A = distance_angle_frame(frame, min_hsv, max_hsv, blur)
+        center, frame_edited_C = get_center(frame, min_hsv, max_hsv, blur)
         # show the original and edited images
         cv2.imshow("original", frame)
-        cv2.imshow("processed", frame_edited)
+        cv2.imshow("processed", frame_edited_D_A)
+        cv2.imshow("processed center", frame_edited_C)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         i += 1
