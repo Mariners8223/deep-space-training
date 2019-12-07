@@ -8,15 +8,22 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.OI;
 import frc.robot.RobotMap;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RotateUntile;
 
 /**
  * Add your docs here.
@@ -24,6 +31,8 @@ import frc.robot.commands.ExampleCommand;
 public class Chassis extends Subsystem {
   ADXRS450_Gyro gyro;
   PIDController RotateGyroPID;
+  PIDController RotateValuePID;
+  public static final Timer m_timer = new Timer();
 
   private Spark m_frontLeft;
   private Spark m_backLeft;
@@ -36,6 +45,25 @@ public class Chassis extends Subsystem {
   private DifferentialDrive m_drive;
 
   private static Chassis instance;
+
+  private class valueSorce implements PIDSource{
+  @Override
+	public void setPIDSourceType(PIDSourceType pidSource) {
+		
+	}
+
+	@Override
+	public PIDSourceType getPIDSourceType() {
+		return null;
+	}
+
+	@Override
+	public double pidGet() {
+		return SmartDashboard.getNumber("ang", 1)*100.0;
+	}
+  }
+
+  private valueSorce vs;
 
   private Chassis(){
     m_frontLeft = new Spark(RobotMap.LEFT_FRONT_MOTOR);
@@ -52,6 +80,13 @@ public class Chassis extends Subsystem {
     RotateGyroPID = new PIDController(1, 1*0.52, 1*0.3, gyro, (double s)->{m_drive.tankDrive(s, -s);});
     RotateGyroPID.setOutputRange(-0.5, 0.5);
     RotateGyroPID.setPercentTolerance(100.0/180.0);
+
+    vs = new valueSorce();
+    RotateValuePID = new PIDController(1, 1*0.52, 1*0.3, vs, (double s)->{m_drive.tankDrive(0,0);});
+    RotateValuePID.setOutputRange(-0.5, 0.5);
+    RotateValuePID.setPercentTolerance(100.0/180.0);
+    //m_timer.reset();
+    //m_timer.start();
   }
 
   public static Chassis getInstance() {
@@ -61,23 +96,85 @@ public class Chassis extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new ExampleCommand());
+    //setDefaultCommand(new ExampleCommand());
+    setDefaultCommand(new RotateUntile());
   }
+
+  /*static public void rotateValue(){
+    double timeL = m_timer.get();
+    double timeN;
+
+    final double errorMax = 1; // ??
+    final double maxS = 0.3;
+    final double needCorrectTime = 0.3;
+    final double errorRange = 0.1;
+    double correctTime = 0;
+
+    double errorL = SmartDashboard.getNumber("ang", 0);
+    double errorN;
+
+    double integralL = 0;
+
+    double kP = 1;
+    double kI = 0.52;
+    double kD = 0.23;
+
+    while(correctTime <= needCorrectTime){
+      timeN = m_timer.get();
+      errorN = SmartDashboard.getNumber("ang", 0);
+
+      SmartDashboard.putNumber("error", errorN);
+
+      double p = errorN;
+      double i = integralL + errorN * (timeN - timeL);
+      double d = (errorN - errorL) / (timeN - timeL);
+
+      double ternS = (kP * p + kI * i + kD * d) * maxS / errorMax;
+      if(Math.abs(ternS) > maxS){
+        ternS = (Math.abs(ternS) / ternS) * maxS;
+      }
+      m_drive.tankDrive(ternS, -ternS);
+
+      if(Math.abs(SmartDashboard.getNumber("ang", 0)) < errorRange){
+        correctTime += timeN - timeL;
+      } else {
+        correctTime = 0;
+      }
+
+      timeL = timeN;
+      errorL = errorN;
+      integralL = i;
+    }
+    m_drive.stopMotor();
+  }*/
 
   public void SetSpeed(Double Left, Double Right){
     m_drive.tankDrive(Left, Right);
   }
 
-  public void EnableRotate(double degree){
+  public void EnableRotateGyro(double degree){
     RotateGyroPID.setSetpoint(degree);
     RotateGyroPID.enable();
   }
 
-  public void DisableRotate(){
+  public void DisableRotateGyro(){
     RotateGyroPID.disable();
   }
 
-  public boolean OnTarget(){
-    return RotateGyroPID.onTarget();
+  public boolean OnTargetGyro(){
+    return RotateValuePID.onTarget();
+  }
+
+  public void EnableRotateValue(){
+    RotateValuePID.setSetpoint(0);
+    RotateValuePID.enable();
+  }
+
+  public void DisableRotateValue(){
+    RotateValuePID.disable();
+  }
+
+  public boolean OnTargetValue(){
+    return RotateValuePID.onTarget();
   }
 }

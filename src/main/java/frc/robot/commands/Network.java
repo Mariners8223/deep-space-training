@@ -7,40 +7,40 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.PullBall;
 
-public class RotateGyro extends Command {
-  Chassis chassis = Chassis.getInstance();
-  double lastTimeOnT;
-  double neededTime = 0.2;
-  double deg;
-
-  public RotateGyro(double deg) {
-    requires(chassis);
-    this.deg = deg;
+public class Network extends Command {
+  public Network() {
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
   }
 
+  // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    chassis.EnableRotateGyro(deg);
   }
 
+  // Called repeatedly when this Command is scheduled to run
+  @Override
+  protected void execute() {
+    PullBall.network();
+  }
+
+  // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if (!chassis.OnTargetGyro())
-      lastTimeOnT = Timer.getFPGATimestamp();
-    return Timer.getFPGATimestamp() - lastTimeOnT < neededTime;
+    return false;
   }
 
+  // Called once after isFinished returns true
   @Override
   protected void end() {
-    chassis.DisableRotateGyro();
   }
 
+  // Called when another command which requires one or more of the same
+  // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    chassis.DisableRotateGyro();
   }
 }

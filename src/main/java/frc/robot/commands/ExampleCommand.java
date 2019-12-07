@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.PullBall;
 
 /**
  * An example command.  You can replace me with your own command.
@@ -18,8 +19,12 @@ import frc.robot.subsystems.Chassis;
 public class ExampleCommand extends Command {
   private double left, right;
   private Chassis chassis = Chassis.getInstance();
+  private PullBall pb = PullBall.getInstance();
+  //PWM pwm = new PWM(0);
+
   public ExampleCommand() {
     // Use requires() here to declare subsystem dependencies
+    requires(pb);
     requires(chassis);
   }
 
@@ -31,7 +36,9 @@ public class ExampleCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    System.out.print(pb.GetDist());
     chassis.SetSpeed(OI.m_joystick.getRawAxis(5) / 2.0, OI.m_joystick.getRawAxis(1) / 2.0);
+    
   }
 
   // Make this return true when this Command no longer needs to run execute()

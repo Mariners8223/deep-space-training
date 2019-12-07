@@ -11,36 +11,29 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.subsystems.Chassis;
 
-public class RotateGyro extends Command {
+public class RotateUntile extends Command {
   Chassis chassis = Chassis.getInstance();
   double lastTimeOnT;
   double neededTime = 0.2;
   double deg;
-
-  public RotateGyro(double deg) {
+  public RotateUntile() {
     requires(chassis);
-    this.deg = deg;
-  }
-
-  @Override
-  protected void initialize() {
-    chassis.EnableRotateGyro(deg);
   }
 
   @Override
   protected boolean isFinished() {
-    if (!chassis.OnTargetGyro())
+    if (!chassis.OnTargetValue())
       lastTimeOnT = Timer.getFPGATimestamp();
     return Timer.getFPGATimestamp() - lastTimeOnT < neededTime;
   }
 
   @Override
   protected void end() {
-    chassis.DisableRotateGyro();
+    chassis.DisableRotateValue();
   }
 
   @Override
   protected void interrupted() {
-    chassis.DisableRotateGyro();
+    chassis.DisableRotateValue();
   }
 }

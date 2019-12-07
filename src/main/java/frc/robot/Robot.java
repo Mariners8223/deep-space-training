@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.RotateGyro;
 import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.PullBall;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,6 +26,7 @@ import frc.robot.subsystems.Chassis;
  */
 public class Robot extends TimedRobot {
   public static Chassis m_subsystem;
+  public static PullBall m_pullBall;
   public static OI m_oi;
 
   Command m_autonomousCommand;
@@ -38,6 +40,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_oi = new OI();
     m_subsystem = Chassis.getInstance();
+    m_pullBall = PullBall.getInstance();
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand(OI.m_joystick.getRawAxis(0),OI.m_joystick.getRawAxis(1)));
     // chooser.addOption("My Auto", new MyAutoCommand());
     // SmartDashboard.putData("Auto mode", m_chooser);
@@ -71,7 +74,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_chooser.getSelected();
-    new RotateGyro(90).start();
+    //new RotateGyro(90).start();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.start();
     }
