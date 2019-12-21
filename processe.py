@@ -1,3 +1,4 @@
+import imutils as imutils
 import numpy as np
 import math
 import cv2
@@ -170,13 +171,30 @@ def get_center(img, min_color, max_color, blur_val):
     return None, frame_hsv
 
 
+def get_image(frame, rotation):
+    frame = cv2.warpPerspective(frame, np.array([
+        [1, 0, 0],
+        [0, np.cos(rotation[0]), -np.sin(rotation[0])],
+        [0, np.sin(rotation[0]), np.cos(rotation[0])]]), (640, 480))
+    frame = cv2.warpPerspective(frame, np.array([
+        [np.cos(rotation[1]), 0, -np.sin(rotation[1])],
+        [0, 1, 0],
+        [-np.sin(rotation[1]), 0, np.cos(rotation[1])]]), (640, 480))
+    frame = cv2.warpPerspective(frame, np.array([
+        [np.cos(rotation[2]), -np.sin(rotation[2]), 0],
+        [np.sin(rotation[2]), np.cos(rotation[2]), 0],
+        [0, 0, 1]]), (640, 480))
+    return frame
+
+
 def main():
     # load vision data
-    data = json.load(open("CalibrationOutPuts\\2019.12.07.18.22.34.094816.json", "r"))
+    data = json.load(open("CalibrationOutPuts\\default.json", "r"))
     light = data["light"]
     blur = data["blur"]
     min_hsv = np.array(data["min"])
     max_hsv = np.array(data["max"])
+    rotation = np.array(data["rotation"])
 
     # camera configuration
     cap = cv2.VideoCapture(0)
@@ -184,8 +202,10 @@ def main():
     i = 0
     while True:
         # reads the frame from the camera
-        _, frame = cap.read()
         # frame = cv2.imread(f"images/img {i}.png")
+        _, frame = cap.read()
+        frame = get_image(frame, rotation)
+
         # get the distance, angle and the edited frame
         D, angle, frame_edited_D_A = distance_angle_frame(frame, min_hsv, max_hsv, blur)
         center, frame_edited_C = get_center(frame, min_hsv, max_hsv, blur)

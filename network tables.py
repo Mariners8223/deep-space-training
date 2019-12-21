@@ -11,11 +11,12 @@ def main():
     sd = NetworkTables.getTable('SmartDashboard')
 
     # load vision data
-    data = json.load(open("CalibrationOutPuts\\2019.12.06.12.36.59.256213.json", "r"))
+    data = json.load(open("CalibrationOutPuts\\2019.12.07.18.47.47.157308.json", "r"))
     light = data["light"]
     blur = data["blur"]
     min_hsv = np.array(data["min"])
     max_hsv = np.array(data["max"])
+    rotation = np.array(data["rotation"])
 
     # camera configuration
     cap = cv2.VideoCapture(0)
@@ -23,12 +24,12 @@ def main():
 
     while 69:
         _, frame = cap.read()
-        d, a, i = processe.distance_angle_frame(frame, min_hsv, max_hsv, blur)
+        frame = processe.get_image(frame, rotation)
+        a, i = processe.get_center(frame, min_hsv, max_hsv, blur)
         cv2.imshow("adas", frame)
         cv2.imshow("ppp", i)
-        if d is not None:
-            sd.putNumber('distance', float(d))
-            sd.putNumber('angle', float(a))
+        if a is not None:
+            sd.putNumber('ang', float(a))
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
