@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="22e376ca-7a32-4799-bef8-d7086d8e0091" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/network tables.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/processe.py" beforeDir="false" afterPath="$PROJECT_DIR$/processe.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -64,7 +63,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.processe">
+  <component name="RunManager" selected="Python.Calibration">
     <configuration name="Calibration" type="PythonConfigurationType" factoryName="Python" singleton="false">
       <module name="opencvTest" />
       <option name="INTERPRETER_OPTIONS" value="" />

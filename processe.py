@@ -1,4 +1,3 @@
-import imutils as imutils
 import numpy as np
 import math
 import cv2
@@ -8,10 +7,24 @@ import json
 
 # distance between two points
 def d(pt1, pt2):
+    """ (float, float), (float, float) --> float
+    distance between 2 points on scalar coordinate system
+    :param pt1: first point
+    :param pt2: second point
+    :return: distance between 2 points
+    """
     return math.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
 
 def distance_angle_frame(img, min_color, max_color, blur_val):
+    """ int[][][], int[], int[], int --> float, float
+    function that calculates the distance and angle from object by image
+    :param img: the raw pixels data
+    :param min_color: minimum color to cut
+    :param max_color: maximum color to cut
+    :param blur_val: blur rate
+    :return: distance and angle from object
+    """
     # convert image to hsv
     frame_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     # threshold
@@ -116,6 +129,14 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
 
 
 def get_center(img, min_color, max_color, blur_val):
+    """ int[][][], int[], int[], int --> float
+    function that calculates the ratio from object to middle of image
+    :param img: the raw pixels data
+    :param min_color: minimum color to cut
+    :param max_color: maximum color to cut
+    :param blur_val: blur rate
+    :return: distance and angle from object
+    """
     # convert image to hsv
     frame_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     # threshold
@@ -168,11 +189,14 @@ def get_center(img, min_color, max_color, blur_val):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             return (pixel_middle[0] / (width / 2)) - 1, frame_hsv
     cv2.putText(frame_hsv, f"center = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-
     return None, frame_hsv
 
 
 def get_rotation_matrix(rotation_array):
+    """ float[] --> float[][]
+    :param rotation_array: angles to fix camera rotation
+    :return: rotation matrix
+    """
     rotation = np.array([
         [np.cos(rotation_array[2]), -np.sin(rotation_array[2]), 0],
         [np.sin(rotation_array[2]), np.cos(rotation_array[2]), 0],
@@ -189,6 +213,11 @@ def get_rotation_matrix(rotation_array):
 
 
 def get_image(frame, rotation):
+    """ int[][][], float[][] --> int[][][]
+    :param frame: raw pixels data
+    :param rotation: rotation matrix
+    :return: rotated image
+    """
     frame = cv2.warpPerspective(frame, rotation, (640, 480))
     return frame
 
