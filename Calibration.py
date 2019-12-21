@@ -1,19 +1,20 @@
 import json
-import re
+import os
 import string
 from datetime import datetime
 import cv2
-from processe import distance_angle_frame
+from processe import distance_angle_frame, get_image, get_rotation_matrix
 import numpy as np
 
 
 # mouse callback function
 def onClick(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
-        global rgb, rgbOn
-        rgb = np.zeros(rgbSize, np.uint8)
-        rgbOn = img[y, x][::-1]
-        cv2.putText(rgb, str(rgbOn), (0, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
+        global hsv, hsvOn, img
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        hsv = np.zeros(hsvSize, np.uint8)
+        hsvOn = img[y, x]
+        cv2.putText(hsv, str(hsvOn), (0, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
 
 
 # Tracker function
@@ -27,8 +28,8 @@ def sign(Name, Test, Bigger):
 
 # Set Max
 def setMax(Max):
-    return lambda x: [cv2.setTrackbarPos(f"{Max}R", "Bars", rgbOn[0]), cv2.setTrackbarPos(f"{Max}G", "Bars", rgbOn[1]),
-                      cv2.setTrackbarPos(f"{Max}B", "Bars", rgbOn[2])] if x == 1 else x
+    return lambda x: [cv2.setTrackbarPos(f"{Max}H", "Bars", hsvOn[0]), cv2.setTrackbarPos(f"{Max}G", "Bars", hsvOn[1]),
+                      cv2.setTrackbarPos(f"{Max}V", "Bars", hsvOn[2])] if x == 1 else x
 
 
 # saves the setting
@@ -38,11 +39,14 @@ def Save(x):
 
         data["min"] = [int(i) for i in data["min"]]
         data["max"] = [int(i) for i in data["max"]]
+        data["rotation"] = [float(i) for i in data["rotation"]]
         print(data)
         with open(f'CalibrationOutPuts\\{date}.json', 'w') as outfile:
             json.dump(data, outfile)
+        data["rotation"] = np.array(data["rotation"])
         data["min"] = np.array(data["min"])
         data["max"] = np.array(data["max"])
+
 
 
 def nothing(x): pass
@@ -50,62 +54,70 @@ def nothing(x): pass
 
 # declaration of windows and constants
 Resize = (640, 480)
-rgbSize = (60, 640, 3)
+hsvSize = (60, 640, 3)
 cv2.namedWindow("Bars")
 cv2.namedWindow("original")
 cv2.namedWindow("processed")
-cv2.namedWindow("rgb")
-cv2.namedWindow("set")
+cv2.namedWindow("hsv")
+# cv2.namedWindow("set")
 cv2.namedWindow("save")
+cv2.namedWindow("Angle")
 
-# rgb
-img = cv2.imread('Tester2.jpg')
-cap = cv2.VideoCapture(1)
+# img = cv2.imread('Tester2.jpg')
+cap = cv2.VideoCapture(0)
 cap.set(15, -10)
 
-rgb = np.zeros(rgbSize, np.uint8)
+hsv = np.zeros(hsvSize, np.uint8)
 cv2.setMouseCallback("original", onClick)
-rgbOn = np.zeros(3)
+hsvOn = np.zeros(3)
 data = {}
 
 # Window arrangement
 cv2.moveWindow("Bars", 645, 515)
 cv2.moveWindow("original", 0, 0)
 cv2.moveWindow("processed", 645, 0)
-cv2.moveWindow("rgb", 0, 515)
-cv2.moveWindow("set", 0, 515 + 95)
+cv2.moveWindow("hsv", 0, 515)
+cv2.moveWindow("Angle", 0, 515 + 95)
 cv2.moveWindow("save", 322, 515 + 95)  # + 115)
 
 cv2.resizeWindow("Bars", 400, 350)
-cv2.resizeWindow("set", 317, 80)
+# cv2.resizeWindow("set", 317, 80)
 cv2.resizeWindow("save", 318, 40)
+cv2.resizeWindow("Angle", 317, 120)
 
 # Tracker creation
-cv2.createTrackbar("MaxR", "Bars", 0, 255, sign("MaxR", "MinR", False))
-cv2.createTrackbar("MinR", "Bars", 0, 255, sign("MinR", "MaxR", True))
-cv2.createTrackbar("MaxG", "Bars", 0, 255, sign("MaxG", "MinG", False))
-cv2.createTrackbar("MinG", "Bars", 0, 255, sign("MinG", "MaxG", True))
-cv2.createTrackbar("MaxB", "Bars", 0, 255, sign("MaxB", "MinB", False))
-cv2.createTrackbar("MinB", "Bars", 0, 255, sign("MinB", "MaxB", True))
+cv2.createTrackbar("MaxH", "Bars", 0, 179, sign("MaxH", "MinH", False))
+cv2.createTrackbar("MinH", "Bars", 0, 179, sign("MinH", "MaxH", True))
+cv2.createTrackbar("MaxS", "Bars", 0, 255, sign("MaxS", "MinS", False))
+cv2.createTrackbar("MinS", "Bars", 0, 255, sign("MinS", "MaxS", True))
+cv2.createTrackbar("MaxV", "Bars", 0, 255, sign("MaxV", "MinV", False))
+cv2.createTrackbar("MinV", "Bars", 0, 255, sign("MinV", "MaxV", True))
+cv2.createTrackbar("AngleX", "Angle", 0, 200, nothing)
+cv2.createTrackbar("AngleY", "Angle", 0, 200, nothing)
+cv2.createTrackbar("AngleZ", "Angle", 0, 200, nothing)
 
 cv2.createTrackbar("Blur", "Bars", 3, 80, nothing)
 cv2.createTrackbar("Light(Neg)", "Bars", 0, 50, lambda x: cap.set(15, -x))
 
-cv2.createTrackbar("SetAsMin", "set", 0, 1, setMax("Min"))
-cv2.createTrackbar("SetAsMax", "set", 0, 1, setMax("Max"))
+#cv2.createTrackbar("SetAsMin", "set", 0, 1, setMax("Min"))
+#cv2.createTrackbar("SetAsMax", "set", 0, 1, setMax("Max"))
 cv2.createTrackbar("Save?", "save", 0, 1, Save)
 
 # Tracker default
-cv2.setTrackbarPos("MaxR", "Bars", 100)
-cv2.setTrackbarPos("MinR", "Bars", 0)
-cv2.setTrackbarPos("MaxG", "Bars", 255)
-cv2.setTrackbarPos("MinG", "Bars", 180)
-cv2.setTrackbarPos("MaxB", "Bars", 255)
-cv2.setTrackbarPos("MinB", "Bars", 85)
+defaultVal = json.load(open("CalibrationOutPuts\\default.json", "r"))
+cv2.setTrackbarPos("MaxH", "Bars", defaultVal["max"][0])
+cv2.setTrackbarPos("MinH", "Bars", defaultVal["min"][0])
+cv2.setTrackbarPos("MaxS", "Bars", defaultVal["max"][1])
+cv2.setTrackbarPos("MinS", "Bars", defaultVal["min"][1])
+cv2.setTrackbarPos("MaxV", "Bars", defaultVal["max"][2])
+cv2.setTrackbarPos("MinV", "Bars", defaultVal["min"][2])
 
-cv2.setTrackbarPos("Light(Neg)", "Bars", 10)
-cv2.setTrackbarPos("Blur", "Bars", 27)
+cv2.setTrackbarPos("Light(Neg)", "Bars", -defaultVal["light"])
+cv2.setTrackbarPos("Blur", "Bars", defaultVal["blur"])
 
+cv2.setTrackbarPos("AngleX", "Angle", int(defaultVal["rotation"][0]*100000+100))
+cv2.setTrackbarPos("AngleY", "Angle", int(defaultVal["rotation"][1]*100000+100))
+cv2.setTrackbarPos("AngleZ", "Angle", int((defaultVal["rotation"][2]*100)/(np.pi/4)+100))
 
 def main():
     while 1:
@@ -113,12 +125,16 @@ def main():
         global img
         _, img = cap.read()
         # getting information from trackers
-        data["min"] = np.array([cv2.getTrackbarPos("MinR", "Bars"), cv2.getTrackbarPos("MinG", "Bars"),
-                                cv2.getTrackbarPos("MinB", "Bars")])
-        data["max"] = np.array([cv2.getTrackbarPos("MaxR", "Bars"), cv2.getTrackbarPos("MaxG", "Bars"),
-                                cv2.getTrackbarPos("MaxB", "Bars")])
+        data["min"] = np.array([cv2.getTrackbarPos("MinH", "Bars"), cv2.getTrackbarPos("MinS", "Bars"),
+                                cv2.getTrackbarPos("MinV", "Bars")])
+        data["max"] = np.array([cv2.getTrackbarPos("MaxH", "Bars"), cv2.getTrackbarPos("MaxS", "Bars"),
+                                cv2.getTrackbarPos("MaxV", "Bars")])
         data["blur"] = cv2.getTrackbarPos("Blur", "Bars")
         data["light"] = -cv2.getTrackbarPos("Light(Neg)", "Bars")
+        data["rotation"] = np.array([(cv2.getTrackbarPos("AngleX", "Angle")-100)/100000, (cv2.getTrackbarPos("AngleY", "Angle")-100)/100000, ((cv2.getTrackbarPos("AngleZ", "Angle")-100)*(np.pi/4))/100])
+
+        angle = get_rotation_matrix(np.array(data["rotation"]))
+        imgR = get_image(img, angle)
 
         # checking blur
         if data["blur"] % 2 == 0:
@@ -128,12 +144,12 @@ def main():
             data["blur"] = 3
             cv2.setTrackbarPos("Blur", "Bars", data["blur"])
 
-        D, angle, frame_edited = distance_angle_frame(img, data["min"], data["max"], data["blur"])
+        D, angle, frame_edited = distance_angle_frame(imgR, data["min"], data["max"], data["blur"])
 
-        # show the original, edited, rgb and bars
-        cv2.imshow("original", img)
+        # show the original, edited, hsv and bars
+        cv2.imshow("original", imgR)
         cv2.imshow("processed", frame_edited)
-        cv2.imshow("rgb", rgb)
+        cv2.imshow("hsv", hsv)
 
         cv2.waitKey(1)
 

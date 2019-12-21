@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import math
 import cv2
@@ -7,10 +9,24 @@ import json
 
 # distance between two points
 def d(pt1, pt2):
+    """ (float, float), (float, float) --> float
+    distance between 2 points on scalar coordinate system
+    :param pt1: first point
+    :param pt2: second point
+    :return: distance between 2 points
+    """
     return math.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
 
 def distance_angle_frame(img, min_color, max_color, blur_val):
+    """ int[][][], int[], int[], int --> float, float
+    function that calculates the distance and angle from object by image
+    :param img: the raw pixels data
+    :param min_color: minimum color to cut
+    :param max_color: maximum color to cut
+    :param blur_val: blur rate
+    :return: distance and angle from object
+    """
     # convert image to hsv
     frame_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     # threshold
@@ -115,6 +131,14 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
 
 
 def get_center(img, min_color, max_color, blur_val):
+    """ int[][][], int[], int[], int --> float
+    function that calculates the ratio from object to middle of image
+    :param img: the raw pixels data
+    :param min_color: minimum color to cut
+    :param max_color: maximum color to cut
+    :param blur_val: blur rate
+    :return: distance and angle from object
+    """
     # convert image to hsv
     frame_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     # threshold
@@ -163,20 +187,58 @@ def get_center(img, min_color, max_color, blur_val):
 
             pixel_middle = (pixel_middle_L + pixel_middle_R) / 2
 
-            cv2.putText(frame_hsv, f"center = {(pixel_middle[0] / (width / 2)) - 1}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(frame_hsv, f"center = {(pixel_middle[0] / (width / 2)) - 1}", (10, 450),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             return (pixel_middle[0] / (width / 2)) - 1, frame_hsv
     cv2.putText(frame_hsv, f"center = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-
     return None, frame_hsv
 
 
+def get_rotation_matrix(rotation_array):
+    """ float[] --> float[][]
+    :param rotation_array: angles to fix camera rotation
+    :return: rotation matrix
+    """
+    rotation = np.array([
+        [np.cos(rotation_array[2]), -np.sin(rotation_array[2]), 0],
+        [np.sin(rotation_array[2]), np.cos(rotation_array[2]), 0],
+        [0, 0, 1]]).dot(
+        np.array([
+            [np.cos(rotation_array[1]), 0, -np.sin(rotation_array[1])],
+            [0, 1, 0],
+            [-np.sin(rotation_array[1]), 0, np.cos(rotation_array[1])]]))
+    rotation = rotation.dot(np.array([
+            [1, 0, 0],
+            [0, np.cos(rotation_array[0]), -np.sin(rotation_array[0])],
+            [0, np.sin(rotation_array[0]), np.cos(rotation_array[0])]]))
+    return rotation
+
+
+def get_image(frame, rotation):
+    """ int[][][], float[][] --> int[][][]
+    :param frame: raw pixels data
+    :param rotation: rotation matrix
+    :return: rotated image
+    """
+    frame = cv2.warpPerspective(frame, rotation, (640, 480))
+    return frame
+
+
 def main():
+    # Find the newest calibration output
+    nameList = os.listdir("CalibrationOutPuts")
+    Newest = "default.json"
+    if len(nameList) > 1:
+        Newest = max(
+            [int(i) for i in [f.replace(".", "")[:-4] for f in nameList if f.endswith('.json')] if i.isdigit()])
+        Newest = [i for i in nameList if str(Newest)[-6:] == i[-11:-5]][0]
     # load vision data
-    data = json.load(open("CalibrationOutPuts\\2019.12.07.18.22.34.094816.json", "r"))
+    data = json.load(open(f"CalibrationOutPuts\\{Newest}", "r"))
     light = data["light"]
     blur = data["blur"]
     min_hsv = np.array(data["min"])
     max_hsv = np.array(data["max"])
+    rotation = get_rotation_matrix(np.array(data["rotation"]))
 
     # camera configuration
     cap = cv2.VideoCapture(0)
@@ -184,8 +246,10 @@ def main():
     i = 0
     while True:
         # reads the frame from the camera
-        _, frame = cap.read()
         # frame = cv2.imread(f"images/img {i}.png")
+        _, frame = cap.read()
+        frame = get_image(frame, rotation)
+
         # get the distance, angle and the edited frame
         D, angle, frame_edited_D_A = distance_angle_frame(frame, min_hsv, max_hsv, blur)
         center, frame_edited_C = get_center(frame, min_hsv, max_hsv, blur)
