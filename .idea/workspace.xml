@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="22e376ca-7a32-4799-bef8-d7086d8e0091" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/opencvTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/opencvTest.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Calibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calibration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CalibrationOutPuts/2019.12.06.12.36.59.256213.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CalibrationOutPuts/2019.12.07.18.22.34.094816.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CalibrationOutPuts/2019.12.07.18.47.47.157308.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CalibrationOutPuts/custom.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CalibrationOutPuts/default.json" beforeDir="false" afterPath="$PROJECT_DIR$/CalibrationOutPuts/default.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/network tables.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/processe.py" beforeDir="false" afterPath="$PROJECT_DIR$/processe.py" afterDir="false" />
     </list>
@@ -41,8 +33,8 @@
       <file leaf-file-name="processe.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/processe.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="235" column="63" selection-start-line="235" selection-start-column="63" selection-end-line="235" selection-end-column="63" />
+            <state relative-caret-position="248">
+              <caret line="236" column="63" selection-start-line="236" selection-start-column="63" selection-end-line="236" selection-end-column="63" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -382,8 +374,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/processe.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="235" column="63" selection-start-line="235" selection-start-column="63" selection-end-line="235" selection-end-column="63" />
+        <state relative-caret-position="248">
+          <caret line="236" column="63" selection-start-line="236" selection-start-column="63" selection-end-line="236" selection-end-column="63" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
