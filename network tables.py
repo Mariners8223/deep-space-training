@@ -16,7 +16,7 @@ def main():
     blur = data["blur"]
     min_hsv = np.array(data["min"])
     max_hsv = np.array(data["max"])
-    rotation = np.array(data["rotation"])
+    rotation = processe.get_rotation_matrix(np.array(data["rotation"]))
 
     # camera configuration
     cap = cv2.VideoCapture(0)

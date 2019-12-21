@@ -164,26 +164,32 @@ def get_center(img, min_color, max_color, blur_val):
 
             pixel_middle = (pixel_middle_L + pixel_middle_R) / 2
 
-            cv2.putText(frame_hsv, f"center = {(pixel_middle[0] / (width / 2)) - 1}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(frame_hsv, f"center = {(pixel_middle[0] / (width / 2)) - 1}", (10, 450),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             return (pixel_middle[0] / (width / 2)) - 1, frame_hsv
     cv2.putText(frame_hsv, f"center = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
     return None, frame_hsv
 
 
+def get_rotation_matrix(rotation_array):
+    rotation = np.array([
+        [np.cos(rotation_array[2]), -np.sin(rotation_array[2]), 0],
+        [np.sin(rotation_array[2]), np.cos(rotation_array[2]), 0],
+        [0, 0, 1]]).dot(
+        np.array([
+            [np.cos(rotation_array[1]), 0, -np.sin(rotation_array[1])],
+            [0, 1, 0],
+            [-np.sin(rotation_array[1]), 0, np.cos(rotation_array[1])]]))
+    rotation = rotation.dot(np.array([
+            [1, 0, 0],
+            [0, np.cos(rotation_array[0]), -np.sin(rotation_array[0])],
+            [0, np.sin(rotation_array[0]), np.cos(rotation_array[0])]]))
+    return rotation
+
+
 def get_image(frame, rotation):
-    frame = cv2.warpPerspective(frame, np.array([
-        [1, 0, 0],
-        [0, np.cos(rotation[0]), -np.sin(rotation[0])],
-        [0, np.sin(rotation[0]), np.cos(rotation[0])]]), (640, 480))
-    frame = cv2.warpPerspective(frame, np.array([
-        [np.cos(rotation[1]), 0, -np.sin(rotation[1])],
-        [0, 1, 0],
-        [-np.sin(rotation[1]), 0, np.cos(rotation[1])]]), (640, 480))
-    frame = cv2.warpPerspective(frame, np.array([
-        [np.cos(rotation[2]), -np.sin(rotation[2]), 0],
-        [np.sin(rotation[2]), np.cos(rotation[2]), 0],
-        [0, 0, 1]]), (640, 480))
+    frame = cv2.warpPerspective(frame, rotation, (640, 480))
     return frame
 
 
@@ -194,7 +200,7 @@ def main():
     blur = data["blur"]
     min_hsv = np.array(data["min"])
     max_hsv = np.array(data["max"])
-    rotation = np.array(data["rotation"])
+    rotation = get_rotation_matrix(np.array(data["rotation"]))
 
     # camera configuration
     cap = cv2.VideoCapture(0)
