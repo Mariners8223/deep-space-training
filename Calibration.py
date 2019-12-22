@@ -119,6 +119,7 @@ cv2.setTrackbarPos("AngleX", "Angle", int(defaultVal["rotation"][0]*100000+100))
 cv2.setTrackbarPos("AngleY", "Angle", int(defaultVal["rotation"][1]*100000+100))
 cv2.setTrackbarPos("AngleZ", "Angle", int((defaultVal["rotation"][2]*100)/(np.pi/4)+100))
 
+
 def main():
     while 1:
         # get img
@@ -150,8 +151,8 @@ def main():
         cv2.imshow("original", imgR)
         cv2.imshow("processed", frame_edited)
         cv2.imshow("hsv", hsv)
-
-        cv2.waitKey(1)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 
 if __name__ == '__main__':
