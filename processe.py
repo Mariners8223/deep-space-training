@@ -18,7 +18,7 @@ def d(pt1, pt2):
     return math.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
 
-def distance_angle_frame(img, min_color, max_color, blur_val):
+def distance_angle_frame(img, min_color, max_color, blur_val, object_area):
     """ int[][][], int[], int[], int --> float, float
     function that calculates the distance and angle from object by image
     :param img: the raw pixels data
@@ -56,7 +56,7 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
                             1)
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
-            D = constants.FOCAL_LENGTH * math.sqrt(constants.STICKER_AREA / (d(box[0], box[1]) * d(box[0], box[3])))
+            D = constants.FOCAL_LENGTH * math.sqrt(object_area / (d(box[0], box[1]) * d(box[0], box[3])))
             pixel_middle = (box[0] + box[3]) / 2
 
             Dx = D * math.sin(constants.FOV * 2 * (pixel_middle[0]) / width)
@@ -89,7 +89,7 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             DL = constants.FOCAL_LENGTH * math.sqrt(
-                constants.STICKER_AREA / (d(boxL[0], boxL[1]) * d(boxL[0], boxL[3])))
+                object_area / (d(boxL[0], boxL[1]) * d(boxL[0], boxL[3])))
             pixel_middle_L = (boxL[0] + boxL[3]) / 2
 
             boxR = cv2.boxPoints(rectR)
@@ -101,7 +101,7 @@ def distance_angle_frame(img, min_color, max_color, blur_val):
                 cv2.putText(frame_hsv, f"angle = {None}", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                 return None, None, frame_hsv
             DR = constants.FOCAL_LENGTH * math.sqrt(
-                constants.STICKER_AREA / (d(boxR[0], boxR[1]) * d(boxR[0], boxR[3])))
+                object_area / (d(boxR[0], boxR[1]) * d(boxR[0], boxR[3])))
             pixel_middle_R = (boxR[0] + boxR[3]) / 2
 
             D = (DL + DR) / 2
@@ -251,7 +251,7 @@ def main():
         frame = get_image(frame, rotation)
 
         # get the distance, angle and the edited frame
-        D, angle, frame_edited_D_A = distance_angle_frame(frame, min_hsv, max_hsv, blur)
+        D, angle, frame_edited_D_A = distance_angle_frame(frame, min_hsv, max_hsv, blur, constants.STICKER_AREA)
         center, frame_edited_C = get_center(frame, min_hsv, max_hsv, blur)
         # show the original and edited images
         cv2.imshow("original", frame)

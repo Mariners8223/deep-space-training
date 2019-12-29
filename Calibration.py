@@ -4,6 +4,7 @@ import string
 from datetime import datetime
 import cv2
 from processe import distance_angle_frame, get_image, get_rotation_matrix
+import constants
 import numpy as np
 
 
@@ -145,7 +146,7 @@ def main():
             data["blur"] = 3
             cv2.setTrackbarPos("Blur", "Bars", data["blur"])
 
-        D, angle, frame_edited = distance_angle_frame(imgR, data["min"], data["max"], data["blur"])
+        D, angle, frame_edited = distance_angle_frame(imgR, data["min"], data["max"], data["blur"], constants.STICKER_AREA)
 
         # show the original, edited, hsv and bars
         cv2.imshow("original", imgR)
