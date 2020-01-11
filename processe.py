@@ -224,6 +224,19 @@ def get_image(frame, rotation):
     return frame
 
 
+def velocity(r, y0):
+    upper = None
+    lower = None
+    if y0 + r > 2.791:
+        u1 = np.sqrt(9.81 * r * r / (y0 + r - 2.791))
+        u2 = np.sqrt(9.81 * (r + 0.74) * (r + 0.74) / (y0 + r - 1.836))
+        l1 = np.sqrt(9.81 * r * r / (y0 + r - 2.209))
+        l2 = np.sqrt(9.81 * (r + 0.74) * (r + 0.74) / (y0 + r - 1.684))
+        upper = min(u1, u2)
+        lower = max(l1, l2)
+    return (upper + lower) / 2
+
+
 def main():
     # Find the newest calibration output
     nameList = os.listdir("CalibrationOutPuts")
@@ -239,7 +252,7 @@ def main():
     min_hsv = np.array(data["min"])
     max_hsv = np.array(data["max"])
     rotation = get_rotation_matrix(np.array(data["rotation"]))
-
+    print(velocity(3, 0.7))
     # camera configuration
     cap = cv2.VideoCapture(0)
     cap.set(15, light)
